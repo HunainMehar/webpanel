@@ -1,7 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { data } from "autoprefixer";
 
 
 function SignUp(props) {
+  const navigate = useNavigate();
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSignup = async(e) => {
+     e.preventDefault();
+    if (password === confirmPassword && password.length > 0) {
+      try {
+         const response = await axios.post("http://localhost:3001/designer/signup", {
+          firstname,
+          lastname,
+          email,
+          password,
+        });
+        
+        //send notification to user
+        alert("OTP has been sent to your email. Please verify your account");
+        //redirect to login page
+        navigate("/Otp", {state:{user:response.data}});
+      }
+      catch (error) {
+        alert(error.response.data);
+      }
+    }
+    else{
+      alert("Enter fields correctly");
+    }
+  }
+
   return ( <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
   <div class="max-w-md w-full space-y-8">
     <div>
@@ -14,37 +49,38 @@ function SignUp(props) {
       <div class=" shadow-sm space-y-3">
         <div >
           <label for="email-address" class="sr-only ">First Name</label>
-          <input id="f-name" name="f-name" type="firstname"  required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="First Name">
+          <input onChange={(e)=> {setFirstname(e.target.value)}} id="f-name" name="f-name" type="firstname"  required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="First Name">
+
         </input>
         </div>
         <div >
           <label for="email-address" class="sr-only">Last Name</label>
-          <input id="l-name" name="l-name" type="lastname" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Last Name">
+          <input onChange={(e)=> {setLastname(e.target.value)}} id="l-name" name="l-name" type="lastname" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Last Name">
         </input>
         </div>
         <div>
           <label for="email-address" class="sr-only">Email address</label>
-          <input id="email-address" name="email" type="email" autocomplete="email" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address">
+          <input onChange={(e)=> {setEmail(e.target.value)}} id="email-address" name="email" type="email" autocomplete="email" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address">
         </input>
         </div>
        
         <div>
           <label for="password" class="sr-only">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
+          <input onChange={(e)=> {setPassword(e.target.value)}} id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
         </input>
         </div>
         <div>
           <label for="password" class="sr-only">Re-enter Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Re-enter Password">
+          <input onChange={(e)=> {setConfirmPassword(e.target.value)}} id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none  relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Re-enter Password">
         </input>
         </div>
       </div>
 
 
       <div>
-        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button onClick={handleSignup} type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            {/* <!-- Heroicon name: solid/lock-closed --> */}
+            
             <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
             </svg>
@@ -54,7 +90,8 @@ function SignUp(props) {
       </div>
     </form>
   </div>
-</div>);
-}
+</div>
+);
+  }
 
 export default SignUp;
