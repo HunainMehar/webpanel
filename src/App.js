@@ -8,7 +8,8 @@ import SignIn from "././Screens/SignIn";
 import SignUp from "././Screens/SignUp";
 import Otp from "././Screens/Otp";
 import ForgetPassword from "././Screens/ForgetPassword";
-import SellerDashboard from "././Screens/SellerDashboard";
+import SellerTopHeader from "./Screens/SellerTopHeader";
+import Designs from "./Screens/Designs";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
-        <Route path="/sellerdashboard" element={<SellerDashboard />} />
+        <Route path="/sellertopheader" element={ <SellerTopHeader />} />
+        <Route path="/designs" element={ <Designs />} />
 
       </Routes>
     </Router>
