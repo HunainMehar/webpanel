@@ -16,23 +16,25 @@ function Otp(props) {
   const navigate = useNavigate();
   console.log(state);
 
-    const handleOtp = (e) => {
-        e.preventDefault();
-        if (otp.length === 4) {
-            try {
-                const response = axios.post("http://localhost:3001/designer/verifysignup", {
-                    otp,
-                    user: state.user,
-
-                });
-                console.log(response);
-                alert("Account verified successfully");
-                navigate("/");
-            } catch (error) {
-                alert(error.response.data);
-            }
-        }
-    };
+  const handleOtp = (e) => {
+    e.preventDefault();
+    if (otp.length === 4) {
+      try {
+        const response = axios.post(
+          "http://localhost:3001/designer/verifysignup",
+          {
+            otp,
+            user: state.user,
+          }
+        );
+        console.log(response);
+        alert("Account verified successfully");
+        navigate("/");
+      } catch (error) {
+        alert(error.response.data);
+      }
+    }
+  };
 
   return (
     <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -56,7 +58,9 @@ function Otp(props) {
                 <input
                   class="m-2 border border-gray-300  h-10 w-10 text-center form-control rounded"
                   type="text"
-                  onChange={(e) => {setOtp(e.target.value)}}
+                  onChange={(e) => {
+                    setOtp(e.target.value);
+                  }}
                   id="first"
                   maxlength="4"
                 />
@@ -81,7 +85,8 @@ function Otp(props) {
               </div>
               <button
                 type="submit"
-                onClick={handleOtp} class="group relative w-full flex justify-center py-2 px-4 mt-6 border border-transparent  text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={handleOtp}
+                class="group relative w-full flex justify-center py-2 px-4 mt-6 border border-transparent  text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 <span class="absolute left-0 inset-y-0 flex items-center pl-3"></span>
                 Resend OTP
