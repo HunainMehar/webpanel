@@ -1,35 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import useState from "react-usestateref";
 import axios from "axios";
 
-
-
 function Designs(props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [file, setFile] = useState(null);
+  const [designs, setDesigns, designsRef] = useState([]);
+  const [upload, setUpload, uploadRef] = useState(null);
+  const [title, setTitle, titleRef] = useState("");
+  const [description, setDescription, descriptionRef] = useState("");
+  const [price, setPrice, priceRef] = useState("");
+  const [file, setFile, fileRef] = useState();
 
   //create a function to upload post
   const uploadPost = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("file", file);
+    var formData = new FormData();
+    formData.append("title", titleRef.current);
+    formData.append("description", descriptionRef.current);
+    formData.append("price", priceRef.current);
+    formData.append("file", fileRef.current);
     formData.append("category", "Dress");
-
     try {
       const response = await axios.post(
         "http://localhost:3001/designer/createpost",
-        formData
+        formData,
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
       );
-      console.log(response);
+      setUpload(response);
       alert("Post created successfully");
     } catch (error) {
       alert(error.response.data);
     }
   };
+
+ 
 
   return (
     <div className="min-h-full">
@@ -41,7 +48,10 @@ function Designs(props) {
       <main>
         <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8">
-            <form className="mt-8 space-y-6" action="#" method="POST">
+            <form className="mt-8 space-y-6" 
+            action="#" 
+            method="POST"
+            >
               <input type="hidden" name="remember" defaultValue="true" />
               <div className=" shadow-sm space-y-3">
                 <div>
@@ -49,7 +59,7 @@ function Designs(props) {
                     Title
                   </label>
                   <input
-                    onchange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => setTitle(e.target.value)}
                     id="title"
                     name="title"
                     type="title"
@@ -63,7 +73,7 @@ function Designs(props) {
                     Description
                   </label>
                   <textarea
-                    onchange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => setDescription(e.target.value)}
                     id="description"
                     cols="20"
                     rows="5"
@@ -78,7 +88,7 @@ function Designs(props) {
                       Price
                     </label>
                     <input
-                      onchange={(e) => setPrice(e.target.value)}
+                      onChange={(e) => setPrice(e.target.value)}
                       id="Price"
                       name="Price"
                       type="Price"
@@ -144,20 +154,26 @@ function Designs(props) {
                           />
                         </svg>
                         <p className="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
-                          {file ? file.name : "Upload File"}
+                          {fileRef.current
+                            ? fileRef.current.name
+                            : "Upload File"}
                         </p>
                       </div>
                       <input
                         type="file"
                         className="opacity-0"
-                        onchange={(e) => setFile(e.target.files[0])}
+                        onChange={(e) => {
+                          setFile(e.target.files[0]);
+                          // console.log(e.target.files);
+                        }}
                       ></input>
                     </label>
                   </div>
                 </div>
                 <div className="flex justify-center p-2">
                   <button
-                    onclick="{uploadPost}"
+                    type="submit"
+                    onClick={uploadPost}
                     className="w-full px-4 py-2 text-white bg-blue-500 rounded shadow-xl"
                   >
                     Create
@@ -165,38 +181,30 @@ function Designs(props) {
                 </div>
               </div>
             </form>
+       
           </div>
         </div>
         <div className="p-10 grid grid-cols-4 gap-4">
-          <ProductsCards />
-          <ProductsCards />
-          <ProductsCards />
-          <ProductsCards />
-          <ProductsCards />
-          <ProductsCards />
+          
         </div>
       </main>
     </div>
   );
-  function ProductsCards() {
+  function ProductsCards(props) {
     return (
       <div className="content-center  py-4 rounded overflow-hidden shadow-lg">
         <div className="content-center px-4 py-4">
           <img
             className="self-center 	aspect-ratio: 1 / 1"
-            src="https://cdn.shopify.com/s/files/1/0293/2618/0445/products/c5ual05b4plk7d4erh80_0_1024x.png?v=1642576405"
+            src={props.post.image}
             alt="River"
             resize="contain"
           />
-          <div className="font-bold text-xl mb-2">Hoodie</div>
-          <p className="text-gray-700 text-base">
-            exercitati itati entium nihil. asd ionem praesentium nihil.
-            exercitationem lorem ipsum dolor sit amet consectetur adipisicing
-            elit. Quisquam, quod!
-          </p>
+          <div className="font-bold text-xl mb-2">{props.post.title}</div>
+          <p className="text-gray-700 text-base">{props.post.description}</p>
           <div className=" flex px-6 pt-6 justify-evenly">
             <span className=" bg-gray-200 w-28  rounded-full px-3 py-1 text-md font-semibold text-gray-700 mb-2">
-              Rs 1500
+              {props.post.price}
             </span>
 
             <button

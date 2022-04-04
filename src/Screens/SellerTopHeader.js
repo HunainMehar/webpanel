@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import useState from "react-usestateref";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
@@ -9,16 +10,17 @@ const user = {
   imageUrl:
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", current: true },
-  { name: "Designs", href: "/designs", current: false },
-  { name: "Orders", href: "/orders", current: false },
-  { name: "Chat", href: "/chat", current: false },
-];
+
 const userNavigation = [
   { name: "Profile", href: "/profile", current: false },
   { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  {
+    name: "Sign out",
+    href: "#",
+    onClick: () => {
+      localStorage.removeItem("token");
+    },
+  },
 ];
 
 function classNames(...classes) {
@@ -32,6 +34,12 @@ function SellerTopHeader({
   openChat,
   openProfile,
 }) {
+  const [navigation, setNavigation] = useState([
+    { name: "Dashboard", href: "/dashboard", current: true },
+    { name: "Designs", href: "/designs", current: false },
+    { name: "Orders", href: "/orders", current: false },
+    { name: "Chat", href: "/chat", current: false },
+  ]);
   return (
     <div>
       <Disclosure as="nav" className="bg-gray-800">
@@ -60,18 +68,70 @@ function SellerTopHeader({
                           )}
                           aria-current={item.current ? "page" : undefined}
                           onClick={() => {
-                            item.name === "Dashboard"
-                              ? openDashboard(true)
-                              : openDashboard(false);
-                            item.name === "Orders"
-                              ? openOrders(true)
-                              : openOrders(false);
-                            item.name === "Designs"
-                              ? openDesigns(true)
-                              : openDesigns(false);
-                            item.name === "Chat"
-                              ? openChat(true)
-                              : openChat(false);
+                            {
+                              item.name === "Dashboard"
+                                ? openDashboard(true)
+                                : openDashboard(false);
+                              item.name === "Orders"
+                                ? openOrders(true)
+                                : openOrders(false);
+                              item.name === "Designs"
+                                ? openDesigns(true)
+                                : openDesigns(false);
+                              item.name === "Chat"
+                                ? openChat(true)
+                                : openChat(false);
+                              item.name === "Profile"
+                                ? openProfile(true)
+                                : openProfile(false);
+                            }
+                            {
+                              item.name === "Dashboard"
+                                ? setNavigation((prev) =>
+                                    prev.map((nav) =>
+                                      nav.name === "Dashboard"
+                                        ? { ...nav, current: true }
+                                        : { ...nav, current: false }
+                                    )
+                                  )
+                                : openDashboard(false);
+                              item.name === "Orders"
+                                ? setNavigation((prev) =>
+                                    prev.map((nav) =>
+                                      nav.name === "Orders"
+                                        ? { ...nav, current: true }
+                                        : { ...nav, current: false }
+                                    )
+                                  )
+                                : openOrders(false);
+                              item.name === "Designs"
+                                ? setNavigation((prev) =>
+                                    prev.map((nav) =>
+                                      nav.name === "Designs"
+                                        ? { ...nav, current: true }
+                                        : { ...nav, current: false }
+                                    )
+                                  )
+                                : openDesigns(false);
+                              item.name === "Chat"
+                                ? setNavigation((prev) =>
+                                    prev.map((nav) =>
+                                      nav.name === "Chat"
+                                        ? { ...nav, current: true }
+                                        : { ...nav, current: false }
+                                    )
+                                  )
+                                : openChat(false);
+                              item.name === "Profile"
+                                ? setNavigation((prev) =>
+                                    prev.map((nav) =>
+                                      nav.name === "Profile"
+                                        ? { ...nav, current: true }
+                                        : { ...nav, current: false }
+                                    )
+                                  )
+                                : openProfile(false);
+                            }
                           }}
                         >
                           {item.name}
@@ -124,6 +184,18 @@ function SellerTopHeader({
                                     item.name === "Profile"
                                       ? openProfile(true)
                                       : openProfile(false);
+                                    item.name === "Dashboard"
+                                      ? openDashboard(true)
+                                      : openDashboard(false);
+                                    item.name === "Orders"
+                                      ? openOrders(true)
+                                      : openOrders(false);
+                                    item.name === "Designs"
+                                      ? openDesigns(true)
+                                      : openDesigns(false);
+                                    item.name === "Chat"
+                                      ? openChat(true)
+                                      : openChat(false);
                                   }}
                                 >
                                   {item.name}

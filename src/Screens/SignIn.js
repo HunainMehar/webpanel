@@ -21,6 +21,8 @@ function SignIn(props) {
           }
         );
         console.log(response);
+        //store token in local storage
+        localStorage.setItem("token", response.data.token);
         alert("Login successful");
         navigate("/home");
       } catch (error) {
