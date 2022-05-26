@@ -29,7 +29,7 @@ function Otp(props) {
         );
         console.log(response);
         alert("Account verified successfully");
-        navigate("/");
+        navigate.navigate("/");
       } catch (error) {
         alert(error.response.data);
       }
@@ -62,7 +62,7 @@ function Otp(props) {
                     setOtp(e.target.value);
                   }}
                   id="first"
-                  maxlength="4"
+                  maxlength="1"
                 />
                 <input
                   class="m-2 border border-gray-300 h-10 w-10 text-center form-control rounded"
@@ -86,12 +86,11 @@ function Otp(props) {
               <button
                 type="submit"
                 onClick={handleOtp}
-                class="group relative w-full flex justify-center py-2 px-4 mt-6 border border-transparent  text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                class="group relative w-full flex justify-center py-2 px-4 mt-6 border border-transparent  text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 <span class="absolute left-0 inset-y-0 flex items-center pl-3"></span>
-                Resend OTP
+                Confirm
               </button>
-              {/* <div class="flex justify-center text-center mt-5"> <a class="flex items-center text-blue-700 hover:text-blue-900 cursor-pointer"><span class="font-bold">Resend OTP</span><i class='bx bx-caret-right ml-1'></i></a> </div> */}
             </div>
           </div>
         </div>

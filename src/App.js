@@ -12,14 +12,17 @@ import SellerTopHeader from "./Screens/SellerTopHeader";
 import Designs from "./Screens/Designs";
 import Dashboard from "./Screens/Dashboard";
 import Profile from "./Screens/Profile";
-import Test from "./Screens/Test";
 import Orders from "./Screens/Orders";
 import Chat from "./Screens/Chat";
-import Modal from "react-modal/lib/components/Modal";
 import Home from "./Screens/Home";
-Modal.setAppElement("#root");
+import OrderDetails from "./Screens/OrderDetails";
+import Notifications from "./Screens/Notifications";
+import Settings from "./Screens/Settings";
+
+// Modal.setAppElement("#root");
 function App() {
   return (
+    // <Test/>
     <Router>
       <Routes>
         <Route path="/" element={<SignIn />} />
@@ -33,7 +36,9 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/orderdetails" element={<OrderDetails />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </Router>
   );
