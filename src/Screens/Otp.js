@@ -21,7 +21,7 @@ function Otp(props) {
     if (otp.length === 4) {
       try {
         const response = axios.post(
-          "http://localhost:3001/designer/verifysignup",
+          "http://backend-fashionhub.herokuapp.com/designer/verifysignup",
           {
             otp,
             user: state.user,

@@ -16,7 +16,7 @@ function SignUp(props) {
      e.preventDefault();
     if (password === confirmPassword && password.length > 0) {
       try {
-         const response = await axios.post("http://localhost:3001/designer/signup", {
+         const response = await axios.post("http://backend-fashionhub.herokuapp.com/designer/signup", {
           firstname,
           lastname,
           email,
