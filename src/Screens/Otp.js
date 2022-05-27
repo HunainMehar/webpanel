@@ -55,7 +55,7 @@ function Otp(props) {
                 id="otp"
                 class="flex flex-row justify-center text-center px-2 mt-5"
               >
-                <input
+                {/* <input
                   class="m-2 border border-gray-300  h-10 w-10 text-center form-control rounded"
                   type="text"
                   onChange={(e) => {
@@ -67,20 +67,29 @@ function Otp(props) {
                 <input
                   class="m-2 border border-gray-300 h-10 w-10 text-center form-control rounded"
                   type="text"
+                  onChange={(e) => {
+                    setOtp(e.target.value);
+                  }}
                   id="second"
                   maxlength="1"
                 />
                 <input
                   class="m-2 border border-gray-300 h-10 w-10 text-center form-control rounded"
                   type="text"
+                  onChange={(e) => {
+                    setOtp(e.target.value);
+                  }}
                   id="third"
                   maxlength="1"
-                />
+                /> */}
                 <input
-                  class="m-2 border border-gray-300 h-10 w-10 text-center form-control rounded"
+                  class="m-2 border border-gray-300 h-10 w-40 text-center form-control rounded"
                   type="text"
-                  id="fourth"
-                  maxlength="1"
+                  onChange={(e) => {
+                    setOtp(e.target.value);
+                  }}
+                 // id="fourth"
+                  maxlength="4"
                 />{" "}
               </div>
               <button
