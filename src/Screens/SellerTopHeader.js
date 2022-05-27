@@ -2,8 +2,9 @@ import React, { useEffect } from "react";
 import useState from "react-usestateref";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { BellIcon, MenuIcon, XIcon,LogoutIcon } from "@heroicons/react/outline";
 import Notifications from "./Notifications";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const user = {
   name: "Tom Cook",
@@ -15,13 +16,7 @@ const user = {
 const userNavigation = [
   { name: "Profile", href: "/profile", current: false },
   { name: "Settings", href: "/settings", current: false },
-  {
-    name: "Sign out",
-    href: "#",
-    onClick: () => {
-      localStorage.removeItem("token");
-    },
-  },
+  
 ];
 
 function classNames(...classes) {
@@ -42,9 +37,17 @@ function SellerTopHeader({
     { name: "Orders", href: "/orders", current: false },
     { name: "Chat", href: "/chat", current: false },
   ]);
+  const nav = useNavigate();
   const [NotifyState, setNotifyState] = useState(false);
   const NotifyScreen = () => {
     return <Notifications showModal={setNotifyState} />;
+  };
+  const signOut = () => {
+    localStorage.removeItem("token");
+    nav("/signin");
+  };
+  const doNothing = () => {
+    return;
   };
   return (
     <>
@@ -171,6 +174,15 @@ function SellerTopHeader({
                         <span className="sr-only  ">View notifications</span>
                         <BellIcon className="h-6 w-6" aria-hidden="true" />
                       </button>
+                      <button
+                        id="Logout"
+                        type="button"
+                        className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                        onClick={() => signOut()}
+                      >
+                        <span className="sr-only  ">Log out</span>
+                        <LogoutIcon className="h-6 w-6" aria-hidden="true" />
+                      </button>
 
                       {/* Profile dropdown */}
                       <Menu as="div" className="ml-3 relative">
@@ -221,6 +233,9 @@ function SellerTopHeader({
                                       item.name === "Settings"
                                         ? openSettings(true)
                                         : openSettings(false);
+                                      item.name === "Sign Out"
+                                        ? signOut()
+                                        : doNothing();
                                     }}
                                   >
                                     {item.name}
@@ -300,6 +315,9 @@ function SellerTopHeader({
                         key={item.name}
                         as="a"
                         href={item.href}
+                        onClick={() => {
+                          item.name === "Sign Out" ? signOut() : doNothing();
+                        }}
                         className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                       >
                         {item.name}

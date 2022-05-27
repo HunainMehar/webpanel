@@ -1,6 +1,118 @@
 import React from "react";
+// RCE CSS
+import "react-chat-elements/dist/main.css";
+import axios from "axios";
+import moment from "moment";
+// MessageBox component
+import { ChatList } from "react-chat-elements";
+function useInterval(callback, delay) {
+  const savedCallback = React.useRef();
+
+  // Remember the latest callback.
+  React.useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  React.useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
 
 function Chat() {
+  const [rooms, setRooms] = React.useState([]);
+  const [messages, setMessages] = React.useState([]);
+  const [selectedRoom, setSelectedRoom] = React.useState(null);
+  const [message, setMessage] = React.useState("");
+  const scroll = React.useRef(null);
+
+  const getRooms = async () => {
+    await axios
+      .get("http://backend-fashionhub.herokuapp.com/designer/getrooms", {
+        headers: {
+          "x-token": localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setRooms(response.data.rooms);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  React.useEffect(() => {
+    getRooms();
+  }, []);
+
+  const getMessages = async () => {
+    await axios
+      .get(
+        "http://backend-fashionhub.herokuapp.com/designer/getmessages/" +
+          selectedRoom.id,
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        //sort array by date createdAt
+        let sortedMessages = response.data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        console.log(sortedMessages);
+
+        setMessages(sortedMessages.reverse());
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useInterval(async () => {
+    await getMessages();
+  }, 10000);
+  React.useEffect(() => {
+    if (selectedRoom) {
+      getMessages();
+    }
+  }, [selectedRoom]);
+
+  const sendMessage = async () => {
+    setMessage("");
+    await axios
+      .post(
+        "http://backend-fashionhub.herokuapp.com/designer/sendmessage",
+        {
+          roomId: selectedRoom.id,
+          message: message,
+        },
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        getMessages();
+        
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  React.useEffect(() => {
+    scroll?.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <div>
       <div className="container mx-auto">
@@ -32,176 +144,70 @@ function Chat() {
             </div>
             <ul className="overflow-auto h-[38rem]">
               <h2 className="my-2 mb-2 ml-2 text-lg text-gray-600">Chats</h2>
-              <li>
-                <a className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">
-                  <img
-                    className="object-cover w-10 h-10 rounded-full"
-                    src="https://cdn.pixabay.com/photo/2018/09/12/12/14/man-3672010__340.jpg"
-                    alt="username"
-                  />
-                  <div className="w-full pb-2">
-                    <div className="flex justify-between">
-                      <span className="block ml-2 font-semibold text-gray-600">
-                        Jhon Don
-                      </span>
-                      <span className="block ml-2 text-sm text-gray-600">
-                        25 minutes
-                      </span>
-                    </div>
-                    <span className="block ml-2 text-sm text-gray-600">
-                      bye
-                    </span>
-                  </div>
-                </a>
-                <a className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out bg-gray-100 border-b border-gray-300 cursor-pointer focus:outline-none">
-                  <img
-                    className="object-cover w-10 h-10 rounded-full"
-                    src="https://cdn.pixabay.com/photo/2016/06/15/15/25/loudspeaker-1459128__340.png"
-                    alt="username"
-                  />
-                  <div className="w-full pb-2">
-                    <div className="flex justify-between">
-                      <span className="block ml-2 font-semibold text-gray-600">
-                        Same
-                      </span>
-                      <span className="block ml-2 text-sm text-gray-600">
-                        50 minutes
-                      </span>
-                    </div>
-                    <span className="block ml-2 text-sm text-gray-600">
-                      Good night
-                    </span>
-                  </div>
-                </a>
-                <a className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">
+              <li>{rooms.map((room) => roomCard(room, setSelectedRoom))}</li>
+            </ul>
+          </div>
+          <div className="hidden lg:col-span-2 lg:block">
+            {selectedRoom && (
+              <div className="w-full">
+                <div className="relative flex items-center p-3 border-b border-gray-300">
                   <img
                     className="object-cover w-10 h-10 rounded-full"
                     src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
                     alt="username"
                   />
-                  <div className="w-full pb-2">
-                    <div className="flex justify-between">
-                      <span className="block ml-2 font-semibold text-gray-600">
-                        Emma
-                      </span>
-                      <span className="block ml-2 text-sm text-gray-600">
-                        6 hour
-                      </span>
-                    </div>
-                    <span className="block ml-2 text-sm text-gray-600">
-                      Good Morning
-                    </span>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="hidden lg:col-span-2 lg:block">
-            <div className="w-full">
-              <div className="relative flex items-center p-3 border-b border-gray-300">
-                <img
-                  className="object-cover w-10 h-10 rounded-full"
-                  src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
-                  alt="username"
-                />
-                <span className="block ml-2 font-bold text-gray-600">Emma</span>
-                <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
+                  <span className="block ml-2 font-bold text-gray-600">
+                    {selectedRoom.name}
+                  </span>
+                  <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
+                </div>
+                <div className="relative w-full p-6 overflow-y-auto h-[34rem]">
+                  <ul className="space-y-2">
+                    {messages.map((message) => (
+                      <li
+                        className={
+                          selectedRoom.loggedUser === message.user._id
+                            ? "flex justify-start"
+                            : "flex justify-end"
+                        }
+                        ref={scroll}
+                      >
+                        <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
+                          <span className="block">{message.text}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
+                  <input
+                    type="text"
+                    placeholder="Message"
+                    className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
+                    name="message"
+                    required
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={async (e) => {
+                      if (e.key === "Enter") {
+                        await sendMessage();
+                      }
+                    }}
+                    value={message}
+                  />
+
+                  <button type="submit" onClick={sendMessage}>
+                    <svg
+                      className="w-5 h-5 text-gray-500 origin-center transform rotate-90"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div className="relative w-full p-6 overflow-y-auto h-[34rem]">
-                <ul className="space-y-2">
-                  <li className="flex justify-start">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
-                      <span className="block">Hi</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-end">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
-                      <span className="block">Hiiii</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-end">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 bg-gray-100 rounded shadow">
-                      <span className="block">how are you?</span>
-                    </div>
-                  </li>
-                  <li className="flex justify-start">
-                    <div className="relative max-w-xl px-4 py-2 text-gray-700 rounded shadow">
-                      <span className="block">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing
-                        elit.
-                      </span>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex items-center justify-between w-full p-3 border-t border-gray-300">
-                <button>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </button>
-                <button>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                    />
-                  </svg>
-                </button>
-                <input
-                  type="text"
-                  placeholder="Message"
-                  className="block w-full py-2 pl-4 mx-3 bg-gray-100 rounded-full outline-none focus:text-gray-700"
-                  name="message"
-                  required
-                />
-                <button>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                    />
-                  </svg>
-                </button>
-                <button type="submit">
-                  <svg
-                    className="w-5 h-5 text-gray-500 origin-center transform rotate-90"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -210,3 +216,38 @@ function Chat() {
 }
 
 export default Chat;
+function roomCard(room, setSelectedRoom) {
+  return (
+    <a
+      key={room.roomId}
+      className="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none"
+      onClick={() => {
+        setSelectedRoom({
+          id: room.roomId,
+          name: room.recieverName,
+          loggedUser: room.loggedUser,
+        });
+      }}
+    >
+      <img
+        className="object-cover w-10 h-10 rounded-full"
+        src={
+          room.recieverImage
+            ? room.recieverImage
+            : "https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
+        }
+        alt="username"
+      />
+      <div className="w-full pb-2">
+        <div className="flex justify-between">
+          <span className="block ml-2 font-semibold text-gray-600">
+            {room.recieverName}
+          </span>
+          <span className="block ml-2 text-sm text-gray-600">
+            {moment(room.lastUpdated).fromNow()}
+          </span>
+        </div>
+      </div>
+    </a>
+  );
+}

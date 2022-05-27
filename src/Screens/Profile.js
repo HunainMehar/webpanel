@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import useState from "react-usestateref";
 import axios from "axios";
 import Test from "./PostModal";
 import jwtDecode from "jwt-decode";
+import useState from "react-usestateref";
 function truncate(string, n) {
   return string?.length > n ? string.substr(0, n - 1) + " ..." : string;
 }
@@ -14,16 +14,40 @@ if (token) {
 function Profile(props) {
   const [designs, setDesigns, designsRef] = useState([]);
   const [profileState, setProfileState] = useState(false);
+  const [post, setPost, postRef] = useState(null);
+  const [currentPost, setCurrentPost] = useState(null);
 
   const getState = (data) => {
     setProfileState(data);
+  };
+
+  const getPostData = async () => {
+    await axios
+      .get(
+        "http://backend-fashionhub.herokuapp.com/designer/getpost/" +
+          currentPost,
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setPost(response.data);
+        
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+      setProfileState(true);
   };
 
   //create a function to get posts
   const getPosts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3001/designer/getposts",
+        "http://backend-fashionhub.herokuapp.com/designer/getposts",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -31,16 +55,16 @@ function Profile(props) {
         }
       );
       console.log(response);
-      setDesigns(response.data);
+      setDesigns(response.data?.filter((item) => item._id !== null));
     } catch (error) {
-      alert(error.response.data);
+      console.log(error);
     }
   };
   useEffect(async () => {
     await getPosts();
   }, []);
   const profileDetails = () => {
-    return <Test showModal={getState} />;
+    return <Test showModal={getState} data={postRef.current} />;
   };
   return (
     <>
@@ -171,9 +195,19 @@ function Profile(props) {
 
     return (
       <div>
-        <div className="h-[90%] w-full p-px ">
+        <div
+          className="h-[90%] w-full p-px "
+          onClick={() => {
+            setCurrentPost(props.post._id);
+          }}
+        >
           {/* post 1 */}
-          <a className="cursor-pointer" onClick={() => setProfileState(true)}>
+          <a
+            className="cursor-pointer"
+            onClick={async () => {
+              await getPostData();
+            }}
+          >
             <article className="post border-2 bg-white text-grey-500 relative  md:mb-6">
               {/* post image*/}
               <div className="flex h-72 items-center justify-center ">

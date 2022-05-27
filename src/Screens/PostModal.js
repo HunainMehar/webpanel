@@ -1,11 +1,68 @@
 import React, { Fragment, useRef, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import moment from "moment";
+import axios from "axios";
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Test(props) {
+  const[description, setDescription,descriptionRef] = useState("");
+  const [price, setPrice] = useState("");
+  const[title, setTitle] = useState("");
+  
+
+
+  //create a function to edit a post
+  const editPost = async() => {
+    //make a post request to the server
+    await axios.put(`http://backend-fashionhub.herokuapp.com/designer/editpost`, {
+      id: props.data._id,
+      description: description,
+      price: price,
+      title: title,
+
+    }, {
+      headers: {
+        "x-token": localStorage.getItem("token"),
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      alert("Post edited successfully");
+      props.closeModal();
+      
+    })
+    .catch((error) => {
+      console.log(error);
+      alert(error.response.data);
+    });
+  };
+
+  //create a function to delete a post
+  const deletePost = async() => {
+    //make a post request to the server
+    await axios.delete(`http://backend-fashionhub.herokuapp.com/designer/deletepost/${props.data._id}`, {
+      headers: {
+        "x-token": localStorage.getItem("token"),
+      },
+    })
+    .then((response) => {
+      console.log(response);
+      alert("Post deleted successfully");
+      props.closeModal();
+    }
+    )
+    .catch((error) => {
+      console.log(error);
+      alert(error.response.data);
+    });
+  };
+  
+
+
   const [showLikeModal, setShowLikeModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
 
@@ -17,7 +74,7 @@ export default function Test(props) {
             <div className="min-h-min aspect-square w-[45%]">
               <img
                 className="object-cover h-full"
-                src="https://cdn.dribbble.com/users/515705/screenshots/15102691/comp_2.png"
+                src={props.data.image}
                 alt="River"
               />
             </div>
@@ -33,12 +90,10 @@ export default function Test(props) {
                   </div>
                   <div className="flex-row">
                     <h2 className="px-2 font-bold text-gray-700 text-left">
-                      Hunain Mehar
+                      {props.data.name}
                     </h2>
                     <p className="px-2 block text-gray-700 text-base">
-                      Lorem ipsum sjnfskd jskdbn kfn kdsn kmaoLorem ipsum
-                      sjnfskd jskdbn kfn kdsn kmaowrnw
-                      oeinmkdmc.sklfnakjbnasklgbnaslkgas
+                      {props.data.description}
                     </p>
                   </div>
 
@@ -90,6 +145,7 @@ export default function Test(props) {
                             {({ active }) => (
                               <a
                                 href="#"
+                                onClick={()=> deletePost(props.data._id)}
                                 className={classNames(
                                   active
                                     ? "bg-gray-100 text-gray-900"
@@ -133,15 +189,9 @@ export default function Test(props) {
                     <div className="px-6 pt-2 ">
                       <table className="w-full whitespace-nowrap">
                         <tbody className="">
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
-                          {Comment()}
+                          {props.data.comments.map((comment) => (
+                            <Comment data={comment} />
+                          ))}
                         </tbody>
                       </table>
                     </div>
@@ -163,38 +213,17 @@ export default function Test(props) {
                         />
                       </svg>{" "}
                       <p className="text-gray-700 text-sm pl-2">
-                        Liked by <b>Khattak_k</b> and{" "}
+                        Liked by and{" "}
                         <a
                           href="#"
                           className="font-bold hover:text-indigo-500"
                           onClick={() => setShowLikeModal(true)}
                         >
-                          26 others
+                          {props.data?.likes?.length} users
                         </a>
                       </p>
                     </div>
                   </div>
-                </div>
-                <div className="w-full max-w-2xl relative pt-4 px-4 flex justify-between items-center">
-                  <input
-                    id="comment"
-                    className="text-gray-600  focus:outline-none focus:border focus:border-indigo-700 bg-white font-normal w-full h-10 flex items-center pl-3 text-sm border-gray-200 rounded border "
-                    placeholder="Add a comment..."
-                  />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-6 w-6 absolute right-5 cursor-pointer text-indigo-400 hover:text-indigo-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
                 </div>
               </div>
             </div>
@@ -233,47 +262,16 @@ export default function Test(props) {
                 </div>
               </div>
               <div className=" px-6 pt-2  overflow-x-hidden overflow-y-auto h-64 z-50">
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
-                <p className=" pb-4 pt-4 text-md">
-                  <b>its_hunainmehar</b> liked your photo.
-                </p>
+                {props.data.likes.map((like) => (
+                  <p className=" pb-4 pt-4 text-md">
+                    <b>{like.firstname + " " + like.lastname} </b> liked
+                    your photo.
+                  </p>
+                ))}
               </div>
             </div>
-
           </div>
-            <div className="opacity-50 fixed inset-0 z-40 bg-black"></div>
+          <div className="opacity-50 fixed inset-0 z-40 bg-black"></div>
         </>
       ) : null}
 
@@ -316,6 +314,7 @@ export default function Test(props) {
                   </label>
                   <input
                     id="name"
+                    onChange={(e) => setTitle(e.target.value)}
                     className="mb-5 mt-2 text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-3 text-sm border-gray-300 rounded border"
                   />
                   <label className="text-gray-800 text-sm font-bold leading-tight tracking-normal">
@@ -325,7 +324,7 @@ export default function Test(props) {
                     <div className="absolute text-gray-600 flex items-center px-4 border-r h-full">
                       <p>Rs</p>
                     </div>
-                    <input className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-16 text-sm border-gray-300 rounded border" />
+                    <input onChange={(e)=> setPrice(e.target.value)} className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-16 text-sm border-gray-300 rounded border" />
                   </div>
                   <label className="text-gray-800 text-sm font-bold leading-tight tracking-normal">
                     Description
@@ -333,16 +332,20 @@ export default function Test(props) {
                   <div className="relative mb-5 mt-2">
                     <input
                       type="text"
+                      onChange={(e) => {setDescription(e.target.value)
+                      }}
+                      
                       className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-24 flex items-center pl-3 text-sm border-gray-300 rounded border"
                     />
                   </div>
                   <div className="flex items-center justify-start w-full">
-                    <button className="focus:outline-none transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm">
+                    <button onClick={editPost} className="focus:outline-none transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm">
                       Save
                     </button>
                     <button
+                      // onClick={() => deletePost(props.data._id)}
                       className="focus:outline-none ml-3 bg-red-500 transition duration-150 text-white ease-in-out hover:border-red-700 hover:bg-red-600 border rounded px-8 py-2 text-sm"
-                      onclick="modalHandler()"
+                      
                     >
                       Delete
                     </button>
@@ -380,7 +383,7 @@ export default function Test(props) {
     </>
   );
 
-  function Comment() {
+  function Comment(props) {
     return (
       <tr className="border-b border-gray-200 ">
         <td className="pt-4 pb-2">
@@ -401,10 +404,12 @@ export default function Test(props) {
             </div>
             <div className="pl-3">
               <div className="flex text-sm leading-none">
-                <p className="font-semibold text-gray-800">Khattak_k</p>
+                <p className="font-semibold text-gray-800">
+                  {props.data._id.firstname + " " + props.data._id.lastname}
+                </p>
               </div>
               <p className="text-xs md:text-sm leading-none text-gray-600 mt-2">
-                Nice very nice beautiful sexy hogaya
+                {props.data.comment}
               </p>
             </div>
           </div>
@@ -412,7 +417,7 @@ export default function Test(props) {
         <td className="self-end">
           <div>
             <p className="text-xs font-medium leading-none text-right text-gray-800">
-              2 hours ago
+              {moment(props.data.date).fromNow()}
             </p>
           </div>
         </td>

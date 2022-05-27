@@ -25,7 +25,7 @@ function App() {
     // <Test/>
     <Router>
       <Routes>
-        <Route path="/" element={<SignIn />} />
+        <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
