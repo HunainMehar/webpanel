@@ -1,9 +1,152 @@
-import React, { useState } from "react";
-import { useFileUpload } from 'use-file-upload'
+import React, { useEffect, useState } from "react";
+import { useFileUpload } from "use-file-upload";
+import axios from "axios";
+import jwtDecode from "jwt-decode";
+import toast from "react-hot-toast";
 
 function Settings() {
-  const [showEditProfile, setShowEditProfile ] = useState(false);
-  const [file,selectFile] = useFileUpload();
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [file, selectFile] = useFileUpload();
+  const [profilepicture, setProfilePicture] = useState(null);
+
+  const token = localStorage.getItem("token");
+  let decodedToken;
+  if (token) {
+    decodedToken = jwtDecode(token);
+  }
+
+  const [firstname, setFirstname] = useState(decodedToken.firstname);
+  const [lastname, setLastname] = useState(decodedToken.lastname);
+  const [email, setEmail] = useState(decodedToken.email);
+  const [phone, setPhone] = useState(decodedToken.phone);
+  const [oldpass, setOldpass] = useState();
+  const [newpass, setNewpass] = useState();
+  const [confirmpass, setConfirmpass] = useState();
+
+  //create a function to upload a profile picture
+  const uploadProfilePicture = async () => {
+    await axios
+      .post(
+        "http://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+          file: file,
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        //get the profile picture
+        getProfilePicture();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  //create a function to get the profile picture
+  const getProfilePicture = async () => {
+    await axios
+      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+        headers: {
+          "x-token": localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        //set the profile picture
+        setProfilePicture(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  //create a function to delete a profile picture
+  const deleteProfilePicture = async () => {
+    const toastId = toast.loading("Loading...");
+    await axios
+      .delete(
+        "http://backend-fashionhub.herokuapp.com/designer/deleteprofilepicture",
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        getProfilePicture();
+        toast.dismiss(toastId);
+        toast.success("Profile Picture Deleted Successfully");
+        setShowEditProfile(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.dismiss(toastId);
+        toast.error(error);
+      });
+  };
+
+  useEffect(async () => {
+    await getProfilePicture();
+  }, []);
+
+  //create a function to get designer details
+  const getDesignerDetails = async () => {
+    await axios
+      .get(
+        "http://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setFirstname(response.data.firstname);
+        setLastname(response.data.lastname);
+        setEmail(response.data.email);
+        setPhone(response.data.phone);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(async () => {
+    await getDesignerDetails();
+  }, []);
+
+  //create a function to change the password
+  const changePassword = async () => {
+    const toastId = toast.loading("Loading...");
+    await axios
+      .post(
+        "http://backend-fashionhub.herokuapp.com/designer/changepassword",
+        {
+          oldpassword: oldpass,
+          newpassword: newpass,
+        },
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        toast.dismiss(toastId);
+        toast.success("Password Changed Successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.dismiss(toastId);
+        toast.error("Some error occured.");
+      });
+  };
+
   return (
     <>
       <div className="flex items-center justify-center">
@@ -34,7 +177,11 @@ function Settings() {
                 <div class="flex flex-col items-center">
                   <div className="w-48 h-48 rounded-full bg-cover bg-center bg-no-repeat relative shadow flex items-center justify-center">
                     <img
-                      src="https://cdn.tuk.dev/assets/webapp/forms/form_layouts/form2.jpg"
+                      src={
+                        profilepicture
+                          ? profilepicture
+                          : "https://st2.depositphotos.com/47577860/45635/v/950/depositphotos_456355278-stock-illustration-users-dots-profile-account-loading.jpg?forcejpeg=true"
+                      }
                       alt
                       className="absolute h-full w-full object-cover rounded-full shadow top-0 left-0 bottom-0 right-0"
                     />
@@ -60,7 +207,12 @@ function Settings() {
                         <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />
                         <line x1={16} y1={5} x2={19} y2={8} />
                       </svg>
-                      <p className="text-xs text-gray-100">Edit Picture</p>
+                      <p
+                        onChange={async () => {
+                          getProfilePicture();
+                        }}
+                        className="text-xs text-gray-100"
+                      ></p>
                     </div>
                   </div>
                 </div>
@@ -81,14 +233,14 @@ function Settings() {
                       class="text-sm leading-none text-gray-800"
                       id="firstName"
                     >
-                      First name
+                      First Name
                     </label>
                     <input
                       type="name"
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
                       aria-labelledby="firstName"
-                      placeholder="John"
+                      placeholder={firstname}
                       readOnly={true}
                     />
                   </div>
@@ -104,7 +256,7 @@ function Settings() {
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
                       aria-labelledby="lastName"
-                      placeholder="Doe"
+                      placeholder={lastname}
                       readOnly={true}
                     />
                   </div>
@@ -122,9 +274,8 @@ function Settings() {
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
                       aria-labelledby="emailAddress"
-                      placeholder="youremail@example.com"
+                      placeholder={email}
                       readOnly={true}
-
                     />
                   </div>
                   <div class="md:w-64 md:ml-12 md:mt-0 mt-4">
@@ -139,7 +290,7 @@ function Settings() {
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
                       aria-labelledby="phone"
-                      placeholder="123-1234567"
+                      placeholder={phone ? phone : "Not Provided"}
                     />
                   </div>
                 </div>
@@ -164,14 +315,15 @@ function Settings() {
                       class="text-sm leading-none text-gray-800"
                       id="password"
                     >
-                      New Password
+                      Old Password
                     </label>
                     <input
                       type="name"
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
                       aria-labelledby="password"
-                      placeholder="Enter new password"
+                      placeholder="Enter Old Password"
+                      onChange={(e) => setOldpass(e.target.value)}
                     />
                   </div>
                   <div class="md:w-64 md:ml-12 md:mt-0 mt-4">
@@ -179,19 +331,36 @@ function Settings() {
                       class="text-sm leading-none text-gray-800"
                       id="confirmPassword"
                     >
+                      New Password
+                    </label>
+                    <input
+                      type="name"
+                      tabindex="0"
+                      class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
+                      aria-labelledby="NewPassword"
+                      onChange={(e) => setNewpass(e.target.value)}
+                      placeholder="Enter New Password "
+                    />
+                  </div>
+                </div>
+                <div class="md:flex items-center lg:ml-24 mt-8">
+                  <div class="md:w-64 ">
+                    <label
+                      class="text-sm leading-none text-gray-800"
+                      id="altPhone"
+                    >
                       Confirm Password
                     </label>
                     <input
                       type="name"
                       tabindex="0"
                       class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
-                      aria-labelledby="confirmPassword"
-                      placeholder="Confirm password"
+                      aria-labelledby="ConfirmPassword"
+                      onChange={(e) => setConfirmpass(e.target.value)}
+                      placeholder="Re-enter Your Password"
                     />
                   </div>
-                </div>
-                <div class="md:flex items-center lg:ml-24 mt-8">
-                  <div class="md:w-64">
+                  <div class="md:w-64 md:ml-12 md:mt-0 mt-4">
                     <label
                       class="text-sm leading-none text-gray-800"
                       id="recoverEmail"
@@ -206,26 +375,21 @@ function Settings() {
                       placeholder="Your recovery email"
                     />
                   </div>
-                  <div class="md:w-64 md:ml-12 md:mt-0 mt-4">
-                    <label
-                      class="text-sm leading-none text-gray-800"
-                      id="altPhone"
-                    >
-                      Alternate phone number
-                    </label>
-                    <input
-                      type="name"
-                      tabindex="0"
-                      class="w-full p-3 mt-3 bg-gray-100 border rounded border-gray-200 focus:outline-none focus:border-gray-600 text-sm font-medium leading-none text-gray-800"
-                      aria-labelledby="altPhone"
-                      placeholder="Your alternate phone number"
-                    />
-                  </div>
                 </div>
               </div>
             </div>
             <div className="flex justify-end items-center">
-              <button className="mx-3 mb-4 px-8 py-3 text-md text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+              <button
+                className="mx-3 mb-4 px-8 py-3 text-md text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                onClick={async () => {
+                  //check new password and confirm password
+                  if (newpass === confirmpass && oldpass.length > 0) {
+                    await changePassword();
+                  } else {
+                    toast.error("Password doesn't matched. Please try again.");
+                  }
+                }}
+              >
                 Save
               </button>
             </div>
@@ -242,20 +406,57 @@ function Settings() {
                 </p>
               </div>
               <div className=" px-6 pt-2 flex flex-col overflow-x-auto">
-
-                <button className=" pb-4 pt-4 text-md border-b text-blue-600" onClick={() => {
-                    selectFile();
-                }}>
+                <button
+                  className=" pb-4 pt-4 text-md border-b text-blue-600"
+                  onClick={() => {
+                    selectFile({}, async ({ source, name, size, file }) => {
+                      const formData = new FormData();
+                      formData.append("file", file);
+                      const toastId = toast.loading("Uploading...");
+                      await axios
+                        .post(
+                          "http://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
+                          formData,
+                          {
+                            headers: {
+                              "x-token": localStorage.getItem("token"),
+                            },
+                          }
+                        )
+                        .then((response) => {
+                          console.log(response.data);
+                          //get the profile picture
+                          getProfilePicture();
+                          toast.dismiss(toastId);
+                          toast.success(
+                            "Profile Picture Uploaded Successfully"
+                          );
+                          setShowEditProfile(false);
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          toast.dismiss(toastId);
+                          toast.error("Upload Failed");
+                        });
+                    });
+                  }}
+                >
                   Upload Photo
-                  
                 </button>
-                <button className=" pb-4 pt-4 border-b text-md text-red-600">
+                <button
+                  className=" pb-4 pt-4 border-b text-md text-red-600"
+                  onClick={async () => {
+                    await deleteProfilePicture();
+                  }}
+                >
                   Remove Current Photo
                 </button>
-                <button className=" pb-4 pt-4 text-md"  onClick={() => setShowEditProfile(false)}>
+                <button
+                  className=" pb-4 pt-4 text-md"
+                  onClick={() => setShowEditProfile(false)}
+                >
                   Cancel
                 </button>
-               
               </div>
             </div>
           </div>

@@ -1,67 +1,95 @@
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useRef, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import moment from "moment";
 import axios from "axios";
-
+import toast from "react-hot-toast";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Test(props) {
-  const[description, setDescription,descriptionRef] = useState("");
+  const [description, setDescription, descriptionRef] = useState("");
   const [price, setPrice] = useState("");
-  const[title, setTitle] = useState("");
-  
+  const [title, setTitle] = useState("");
+  const [profilepicture, setProfilePicture] = useState("");
 
+  //create a function to get the profile picture
+  const getProfilePicture = async () => {
+    await axios
+      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+        headers: {
+          "x-token": localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        //set the profile picture
+        setProfilePicture(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(async () => {
+    await getProfilePicture();
+  }, []);
 
   //create a function to edit a post
-  const editPost = async() => {
+  const editPost = async () => {
+    const toastId = toast.loading("Loading...");
     //make a post request to the server
-    await axios.put(`http://backend-fashionhub.herokuapp.com/designer/editpost`, {
-      id: props.data._id,
-      description: description,
-      price: price,
-      title: title,
-
-    }, {
-      headers: {
-        "x-token": localStorage.getItem("token"),
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      alert("Post edited successfully");
-      props.closeModal();
-      
-    })
-    .catch((error) => {
-      console.log(error);
-      alert(error.response.data);
-    });
+    await axios
+      .put(
+        `http://backend-fashionhub.herokuapp.com/designer/editpost`,
+        {
+          id: props.data._id,
+          description: description,
+          price: price,
+          title: title,
+        },
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        toast.dismiss(toastId);
+        toast.success("Post Edited Successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.dismiss(toastId);
+        toast.error("Some error occured");
+      });
   };
 
   //create a function to delete a post
-  const deletePost = async() => {
+  const deletePost = async () => {
+    const toastId = toast.loading("Loading...");
     //make a post request to the server
-    await axios.delete(`http://backend-fashionhub.herokuapp.com/designer/deletepost/${props.data._id}`, {
-      headers: {
-        "x-token": localStorage.getItem("token"),
-      },
-    })
-    .then((response) => {
-      console.log(response);
-      alert("Post deleted successfully");
-      props.closeModal();
-    }
-    )
-    .catch((error) => {
-      console.log(error);
-      alert(error.response.data);
-    });
+    await axios
+      .delete(
+        `http://backend-fashionhub.herokuapp.com/designer/deletepost/${props.data._id}`,
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        toast.dismiss(toastId);
+        toast.success("Post Deleted Successfully");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.dismiss(toastId);
+        toast.error("Some error occured");
+      });
   };
-  
-
 
   const [showLikeModal, setShowLikeModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
@@ -73,18 +101,22 @@ export default function Test(props) {
           <div className="border-1 rounded-lg shadow-lg relative flex w-full bg-white outline-none focus:outline-none">
             <div className="min-h-min aspect-square w-[45%]">
               <img
-                className="object-cover h-full"
+                className="mx-auto h-full"
                 src={props.data.image}
                 alt="River"
               />
             </div>
-            <div className="flex W-[55%]">
-              <div className="flex-row px-4 py-4">
+            <div className="flex w-[55%]">
+              <div className="flex-row w-full px-4 py-4">
                 <div className="items-start flex pb-4">
                   <div className="flex pt-2 w-14 justify-center">
                     <img
                       className="h-10 w-10 rounded-full"
-                      src="https://cdn.dribbble.com/users/515705/screenshots/15102691/comp_2.png"
+                      src={
+                        profilepicture
+                          ? profilepicture
+                          : "https://st2.depositphotos.com/47577860/45635/v/950/depositphotos_456355278-stock-illustration-users-dots-profile-account-loading.jpg?forcejpeg=true"
+                      }
                       alt="Workflow"
                     />
                   </div>
@@ -92,7 +124,7 @@ export default function Test(props) {
                     <h2 className="px-2 font-bold text-gray-700 text-left">
                       {props.data.name}
                     </h2>
-                    <p className="px-2 block text-gray-700 text-base">
+                    <p className="px-2 text-gray-700 text-base">
                       {props.data.description}
                     </p>
                   </div>
@@ -145,7 +177,7 @@ export default function Test(props) {
                             {({ active }) => (
                               <a
                                 href="#"
-                                onClick={()=> deletePost(props.data._id)}
+                                onClick={() => deletePost(props.data._id)}
                                 className={classNames(
                                   active
                                     ? "bg-gray-100 text-gray-900"
@@ -233,8 +265,8 @@ export default function Test(props) {
       {showLikeModal ? (
         <>
           <div className="w-full px-4  justify-center items-center flex overflow-x-hidden fixed inset-0 z-50 outline-none focus:outline-none ">
-            <div className="relative border rounded-lg pb-2 border-gray-500 bg-white ">
-              <div className="flex  items-center rounded-t-lg border-b border-gray-600 bg-gray-600 justify-center px-6 py-3">
+            <div className="relative w-[25%] border rounded-lg pb-2 border-gray-500 bg-white ">
+              <div className="flex  items-center rounded-t-lg border-b border-gray-600 bg-gray-600 justify-center px-6 py-3 w-full">
                 <p className="text-xl font-semibold leading-tight text-white">
                   Likes
                 </p>
@@ -264,8 +296,8 @@ export default function Test(props) {
               <div className=" px-6 pt-2  overflow-x-hidden overflow-y-auto h-64 z-50">
                 {props.data.likes.map((like) => (
                   <p className=" pb-4 pt-4 text-md">
-                    <b>{like.firstname + " " + like.lastname} </b> liked
-                    your photo.
+                    <b>{like.firstname + " " + like.lastname} </b> liked your
+                    photo.
                   </p>
                 ))}
               </div>
@@ -324,7 +356,10 @@ export default function Test(props) {
                     <div className="absolute text-gray-600 flex items-center px-4 border-r h-full">
                       <p>Rs</p>
                     </div>
-                    <input onChange={(e)=> setPrice(e.target.value)} className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-16 text-sm border-gray-300 rounded border" />
+                    <input
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center pl-16 text-sm border-gray-300 rounded border"
+                    />
                   </div>
                   <label className="text-gray-800 text-sm font-bold leading-tight tracking-normal">
                     Description
@@ -332,22 +367,18 @@ export default function Test(props) {
                   <div className="relative mb-5 mt-2">
                     <input
                       type="text"
-                      onChange={(e) => {setDescription(e.target.value)
+                      onChange={(e) => {
+                        setDescription(e.target.value);
                       }}
-                      
                       className="text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-24 flex items-center pl-3 text-sm border-gray-300 rounded border"
                     />
                   </div>
                   <div className="flex items-center justify-start w-full">
-                    <button onClick={editPost} className="focus:outline-none transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm">
-                      Save
-                    </button>
                     <button
-                      // onClick={() => deletePost(props.data._id)}
-                      className="focus:outline-none ml-3 bg-red-500 transition duration-150 text-white ease-in-out hover:border-red-700 hover:bg-red-600 border rounded px-8 py-2 text-sm"
-                      
+                      onClick={editPost}
+                      className="focus:outline-none transition duration-150 ease-in-out hover:bg-indigo-600 bg-indigo-700 rounded text-white px-8 py-2 text-sm"
                     >
-                      Delete
+                      Save
                     </button>
                   </div>
                   <div

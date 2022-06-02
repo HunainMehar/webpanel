@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import "./App.css";
 import "./index.css";
@@ -18,13 +23,26 @@ import Home from "./Screens/Home";
 import OrderDetails from "./Screens/OrderDetails";
 import Notifications from "./Screens/Notifications";
 import Settings from "./Screens/Settings";
+import toast, { Toaster } from "react-hot-toast";
 
 // Modal.setAppElement("#root");
 function App() {
   return (
     // <Test/>
+
     <Router>
+      <Toaster />
       <Routes>
+        <Route
+          path="/"
+          element={
+            localStorage.getItem("token") ? (
+              <Navigate to={"/home"} />
+            ) : (
+              <Navigate to={"/signin"} />
+            )
+          }
+        />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
@@ -35,7 +53,16 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/chat" element={<Chat />} />
-        <Route path="/home" element={<Home />} />
+        <Route
+          path="/home"
+          element={
+            localStorage.getItem("token") ? (
+              <Home />
+            ) : (
+              <Navigate to={"/signin"} />
+            )
+          }
+        />
         <Route path="/orderdetails" element={<OrderDetails />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />

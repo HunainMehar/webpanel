@@ -16,6 +16,16 @@ function Profile(props) {
   const [profileState, setProfileState] = useState(false);
   const [post, setPost, postRef] = useState(null);
   const [currentPost, setCurrentPost] = useState(null);
+  const [followerlength, setFollowerlength] = useState(
+    decodedToken["followers"]
+  );
+  const [profilepicture, setProfilepicture] = useState(
+    decodedToken["profilepicture"]
+  );
+  const [postlength, setPostlength] = useState(decodedToken["posts"]);
+  const [name, setName] = useState(
+    decodedToken["firstname"] + " " + decodedToken["lastname"]
+  );
 
   const getState = (data) => {
     setProfileState(data);
@@ -35,13 +45,38 @@ function Profile(props) {
       .then((response) => {
         console.log(response.data);
         setPost(response.data);
-        
       })
       .catch((error) => {
         console.log(error);
       });
-      setProfileState(true);
+    setProfileState(true);
   };
+
+  //create a function to get designer details
+  const getDesignerDetails = async () => {
+    await axios
+      .get(
+        "http://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
+        {
+          headers: {
+            "x-token": localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setFollowerlength(response.data.followers);
+        setPostlength(response.data.posts);
+        setName(response.data.firstname + " " + response.data.lastname);
+        setProfilepicture(response.data.profilepic);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(async () => {
+    await getDesignerDetails();
+  }, []);
 
   //create a function to get posts
   const getPosts = async () => {
@@ -54,7 +89,7 @@ function Profile(props) {
           },
         }
       );
-      console.log(response);
+      console.log(response.data);
       setDesigns(response.data?.filter((item) => item._id !== null));
     } catch (error) {
       console.log(error);
@@ -83,7 +118,11 @@ function Profile(props) {
                 <img
                   className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full
                      border-2 border-pink-600 p-1"
-                  src="https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=80"
+                  src={
+                    profilepicture
+                      ? profilepicture
+                      : "https://st2.depositphotos.com/47577860/45635/v/950/depositphotos_456355278-stock-illustration-users-dots-profile-account-loading.jpg?forcejpeg=true"
+                  }
                   alt="profile"
                 />
               </div>
@@ -91,7 +130,7 @@ function Profile(props) {
               <div className="w-8/12 md:w-7/12 ml-4">
                 <div className="md:flex md:flex-wrap md:items-center mb-4">
                   <h2 className="text-3xl inline-block font-light md:mr-2 mb-2 sm:mb-0">
-                    {decodedToken["firstname"] + " " + decodedToken["lastname"]}
+                    {name}
                   </h2>
                   {/* badge */}
                   <span
@@ -108,15 +147,11 @@ function Profile(props) {
                 {/* post, following, followers list for medium screens */}
                 <ul className="hidden md:flex space-x-8 mb-4">
                   <li>
-                    <span className="font-semibold">
-                      {decodedToken["posts"]}{" "}
-                    </span>
+                    <span className="font-semibold">{postlength} </span>
                     posts
                   </li>
                   <li>
-                    <span className="font-semibold">
-                      {decodedToken["followers"]}{" "}
-                    </span>
+                    <span className="font-semibold">{followerlength} </span>
                     followers
                   </li>
                 </ul>
@@ -220,8 +255,8 @@ function Profile(props) {
               <div className="px-8 font-bold text-xl mb-2">
                 {props.post.title}
               </div>
-              <p className="px-8 text-justify text-gray-700 text-base">
-                {truncate(props.post.description, 48)}
+              <p className="px-8 text-left text-gray-700 text-base">
+                {truncate(props.post.description, 28)}
               </p>
               <div className=" flex py-4 justify-evenly">
                 <span className="flex flex-row border-2 rounded-full px-3 py-1 text-md font-semibold text-gray-700 mb-2">

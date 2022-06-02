@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import useState from "react-usestateref";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function Designs(props) {
   const [designs, setDesigns, designsRef] = useState([]);
@@ -12,6 +13,7 @@ function Designs(props) {
 
   //create a function to upload post
   const uploadPost = async (e) => {
+    const toastId = toast.loading("Loading...")
     e.preventDefault();
     var formData = new FormData();
     formData.append("title", titleRef.current);
@@ -30,9 +32,11 @@ function Designs(props) {
         }
       );
       setUpload(response);
-      alert("Post created successfully");
+      toast.dismiss(toastId)
+      toast.success("Post Uploaded Successfully")
     } catch (error) {
-      alert(error.response.data);
+      toast.dismiss(toastId)
+      toast.error("Some error occured")
     }
   };
 

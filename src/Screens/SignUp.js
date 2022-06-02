@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { data } from "autoprefixer";
+import toast from "react-hot-toast";
 
 
 function SignUp(props) {
@@ -15,6 +16,7 @@ function SignUp(props) {
   const handleSignup = async(e) => {
      e.preventDefault();
     if (password === confirmPassword && password.length > 0) {
+      const toastId = toast.loading("Loading...");
       try {
          const response = await axios.post("http://backend-fashionhub.herokuapp.com/designer/signup", {
           firstname,
@@ -24,16 +26,18 @@ function SignUp(props) {
         });
         
         //send notification to user
-        alert("OTP has been sent to your email. Please verify your account");
+        toast.dismiss(toastId);
+        toast.success("Please verify your email");
         //redirect to login page
         navigate("/Otp", {state:{user:response.data}});
       }
       catch (error) {
-        alert(error.response.data);
+        toast.dismiss(toastId)
+        toast.error(error.response.data);
       }
     }
     else{
-      alert("Enter fields correctly");
+      toast.error("Enter all fields");
     }
   }
 

@@ -2,9 +2,16 @@ import React, { useEffect } from "react";
 import useState from "react-usestateref";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon,LogoutIcon } from "@heroicons/react/outline";
+import {
+  BellIcon,
+  MenuIcon,
+  XIcon,
+  LogoutIcon,
+} from "@heroicons/react/outline";
 import Notifications from "./Notifications";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { useFileUpload } from "use-file-upload";
 
 const user = {
   name: "Tom Cook",
@@ -16,7 +23,6 @@ const user = {
 const userNavigation = [
   { name: "Profile", href: "/profile", current: false },
   { name: "Settings", href: "/settings", current: false },
-  
 ];
 
 function classNames(...classes) {
@@ -39,16 +45,38 @@ function SellerTopHeader({
   ]);
   const nav = useNavigate();
   const [NotifyState, setNotifyState] = useState(false);
+  const [profilepicture, setProfilePicture] = useState();
   const NotifyScreen = () => {
     return <Notifications showModal={setNotifyState} />;
   };
   const signOut = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     nav("/signin");
   };
   const doNothing = () => {
     return;
   };
+  //create a function to get the profile picture
+  const getProfilePicture = async () => {
+    await axios
+      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+        headers: {
+          "x-token": localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        //set the profile picture
+        setProfilePicture(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(async () => {
+    await getProfilePicture();
+  }, []);
+
   return (
     <>
       {NotifyState && NotifyScreen()}
@@ -191,7 +219,11 @@ function SellerTopHeader({
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              src={user.imageUrl}
+                              src={
+                                profilepicture
+                                  ? profilepicture
+                                  : "https://st2.depositphotos.com/47577860/45635/v/950/depositphotos_456355278-stock-illustration-users-dots-profile-account-loading.jpg?forcejpeg=true"
+                              }
                               alt=""
                             />
                           </Menu.Button>

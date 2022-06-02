@@ -3,6 +3,7 @@ import axios from "axios";
 //import use navigation from react router dom
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 function SignIn(props) {
   const [email, setEmail] = React.useState("");
@@ -13,6 +14,7 @@ function SignIn(props) {
   const handleSignin = async (e) => {
     e.preventDefault();
     if (password.length > 0) {
+      const toastId = toast.loading("Loading...");
       try {
         const response = await axios.post(
           "http://backend-fashionhub.herokuapp.com/designer/login",
@@ -24,10 +26,12 @@ function SignIn(props) {
         console.log(response);
         //store token in local storage
         localStorage.setItem("token", response.data.token);
-        alert("Login successful");
+        toast.dismiss(toastId);
+        toast.success("Login Successful");
         navigate("/home");
       } catch (error) {
-        alert(error.response.data);
+        toast.dismiss(toastId);
+        toast.error("Invalid Credentials");
       }
     }
   };
@@ -35,9 +39,7 @@ function SignIn(props) {
   return (
     <>
       {localStorage.getItem("token") ? (
-       <Navigate
-          to="/home"
-        />
+        <Navigate to="/home" />
       ) : (
         <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div class="max-w-md w-full space-y-8">

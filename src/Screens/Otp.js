@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 //function to obscure email
 const obscureEmail = (email) => {
@@ -19,6 +20,7 @@ function Otp(props) {
   const handleOtp = (e) => {
     e.preventDefault();
     if (otp.length === 4) {
+      const toastId = toast.loading("Loading...");
       try {
         const response = axios.post(
           "http://backend-fashionhub.herokuapp.com/designer/verifysignup",
@@ -28,10 +30,12 @@ function Otp(props) {
           }
         );
         console.log(response);
-        alert("Account verified successfully");
+        toast.dismiss(toastId);
+        toast.success("Verification Successful");
         navigate("/signin");
       } catch (error) {
-        alert(error.response.data);
+        toast.dismiss(toastId);
+        toast.error("Invalid OTP");
       }
     }
   };
