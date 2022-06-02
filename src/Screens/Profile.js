@@ -243,7 +243,7 @@ function Profile(props) {
               await getPostData();
             }}
           >
-            <article className="post border-2 bg-white text-grey-500 relative  md:mb-6">
+            <article className=" border-2 bg-white text-grey-500">
               {/* post image*/}
               <div className="flex h-72 items-center justify-center ">
                 <img
@@ -252,10 +252,10 @@ function Profile(props) {
                   alt="River"
                 />
               </div>
-              <div className="px-8 font-bold text-xl mb-2">
+              <div className="px-8 font-bold text-xl mb-1">
                 {props.post.title}
               </div>
-              <p className="px-8 text-left text-gray-700 text-base">
+              <p className="px-8 text-left text-gray-700">
                 {truncate(props.post.description, 28)}
               </p>
               <div className=" flex py-4 justify-evenly">

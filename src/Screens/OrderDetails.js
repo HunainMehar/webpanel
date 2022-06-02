@@ -92,12 +92,12 @@ function OrderDetails() {
           </div>
         </header>
       </div>
-      <div className="max-w-7xl mx-auto py-6 px-4 mt-6 flex felx-wrap flex-between shadow-md">
-        <div >
+      <div className="max-w-7xl  mx-auto py-6 px-4 mt-6 flex flex-wrap shadow-md">
         <h1 className="text-3xl font-bold text-gray-900">Product</h1>
+        <div className="">
           <img
-            src="https://cdn.dribbble.com/users/515705/screenshots/15102691/comp_2.png"
-            className="max-w-lg h-auto shadow-lg m-8"
+            src="https://www.whatsappprofiledpimages.com/wp-content/uploads/2021/10/4k-Best-Latest-Whatsapp-Dp-Profile-Images-photo.gif"
+            className="max-w-lg h-96  object-contain shadow-lg m-8"
             alt=""
           />
           </div>
@@ -122,7 +122,7 @@ function OrderDetails() {
           </dl>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto py-6 px-4">
+      <div className="max-w-7xl mx-auto py-4 px-4">
       <h1 className="text-3xl font-bold text-gray-900">Customer #101</h1>
             <h2>Talha Bukhari</h2>
             <h2>230 Awais Qarni Bahria Town Lahore</h2>

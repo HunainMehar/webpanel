@@ -13,6 +13,7 @@ import SignIn from "././Screens/SignIn";
 import SignUp from "././Screens/SignUp";
 import Otp from "././Screens/Otp";
 import ForgetPassword from "././Screens/ForgetPassword";
+import NewPassword from "./Screens/NewPassword";
 import SellerTopHeader from "./Screens/SellerTopHeader";
 import Designs from "./Screens/Designs";
 import Dashboard from "./Screens/Dashboard";
@@ -47,6 +48,7 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
         <Route path="/forgetpassword" element={<ForgetPassword />} />
+        <Route path="/newpassword" element={<NewPassword />} />
         <Route path="/sellertopheader" element={<SellerTopHeader />} />
         <Route path="/designs" element={<Designs />} />
         <Route path="/dashboard" element={<Dashboard />} />

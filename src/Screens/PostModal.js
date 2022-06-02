@@ -120,11 +120,11 @@ export default function Test(props) {
                       alt="Workflow"
                     />
                   </div>
-                  <div className="flex-row">
+                  <div className="flex-row w-full">
                     <h2 className="px-2 font-bold text-gray-700 text-left">
                       {props.data.name}
                     </h2>
-                    <p className="px-2 text-gray-700 text-base">
+                    <p className="px-2 text-gray-700 text-left">
                       {props.data.description}
                     </p>
                   </div>

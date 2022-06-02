@@ -45,13 +45,13 @@ function Designs(props) {
   return (
     <div className="min-h-full">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-6 px-4 ">
           <h1 className="text-3xl font-bold text-gray-900">Designs</h1>
         </div>
       </header>
       <main className="overflow-y-auto">
-        <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full space-y-8">
+        <div className="min-h-full flex items-center justify-center py-4 px-4 ">
+          <div className="max-w-md w-full ">
             <form className="mt-8 space-y-6" 
             action="#" 
             method="POST"
@@ -80,7 +80,7 @@ function Designs(props) {
                     onChange={(e) => setDescription(e.target.value)}
                     id="description"
                     cols="20"
-                    rows="5"
+                    rows="3"
                     placeholder="write here.."
                     className="w-full font-serif  p-4 mt-2 text-gray-600 bg-indigo-50 outline-none rounded-md"
                   />
@@ -101,45 +101,7 @@ function Designs(props) {
                       placeholder="Price"
                     ></input>
                   </div>
-                  <h1 className="mb-2 pt-2 mx-auto text-gray-500">
-                    Available for Order
-                  </h1>
-                  <div class="flex items-center mb-4">
-                    <input
-                      id="country-option-1"
-                      type="radio"
-                      name="countries"
-                      value="USA"
-                      className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600"
-                      aria-labelledby="country-option-1"
-                      aria-describedby="country-option-1"
-                      checked
-                    />
-                    <label
-                      for="country-option-1"
-                      className="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      Yes
-                    </label>
-                  </div>
-                  <div class="flex items-center mb-4">
-                    <input
-                      id="country-option-1"
-                      type="radio"
-                      name="countries"
-                      value="USA"
-                      className="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600"
-                      aria-labelledby="country-option-1"
-                      aria-describedby="country-option-1"
-                      checked
-                    />
-                    <label
-                      for="country-option-1"
-                      className="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                      No
-                    </label>
-                  </div>
+                  
                   <div className="flex items-center justify-center w-full">
                     <label className="flex flex-col w-full h-32 border-4 border-grey-500 cursor-pointer border-dashed hover:bg-gray-100 hover:border-gray-300">
                       <div className="flex flex-col items-center justify-center pt-7">
@@ -187,9 +149,6 @@ function Designs(props) {
             </form>
        
           </div>
-        </div>
-        <div className="p-10 grid grid-cols-4 gap-4">
-          
         </div>
       </main>
     </div>
