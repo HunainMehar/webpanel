@@ -23,6 +23,7 @@ function ForgetPassword(props) {
         toast.dismiss(toastId);
         toast.success("Password reset link sent to your email");
         navigate("/otp");
+      
       } catch (error) {
         toast.dismiss(toastId);
         toast.error("Some error occured");
