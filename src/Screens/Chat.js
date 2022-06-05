@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 // RCE CSS
 import "react-chat-elements/dist/main.css";
 import axios from "axios";
 import moment from "moment";
+import useState from "react-usestateref";
+import { SocketContext } from "../services/webSockets";
+import genericService from "../services/genericServices";
 // MessageBox component
 import { ChatList } from "react-chat-elements";
 function useInterval(callback, delay) {
@@ -27,10 +30,11 @@ function useInterval(callback, delay) {
 
 function Chat() {
   const [rooms, setRooms] = React.useState([]);
-  const [messages, setMessages] = React.useState([]);
-  const [selectedRoom, setSelectedRoom] = React.useState(null);
+  const [messages, setMessages, messagesRef] = useState([]);
+  const [selectedRoom, setSelectedRoom] = React.useState({});
   const [message, setMessage] = React.useState("");
   const scroll = React.useRef(null);
+  const socket = useContext(SocketContext);
 
   const getRooms = async () => {
     await axios
@@ -76,16 +80,44 @@ function Chat() {
         console.log(error);
       });
   };
-  useInterval(async () => {
-    await getMessages();
-  }, 10000);
+  // useInterval(async () => {
+  //   await getMessages();
+  // }, 10000);
   React.useEffect(() => {
     if (selectedRoom) {
       getMessages();
     }
   }, [selectedRoom]);
 
+  React.useEffect(() => {
+    console.log(selectedRoom.id);
+    socket.on("receivemsg", (data) => {
+      console.log(data);
+      if (data.roomID === selectedRoom?.id) {
+        setMessages([...messagesRef.current, data.msg]);
+      }
+    });
+  }, [socket, selectedRoom]);
+
   const sendMessage = async () => {
+    const id = genericService.getUserInfo();
+    const msg = {
+      receiverID: selectedRoom.loggedUser,
+      roomID: selectedRoom.id,
+      senderID: id._id,
+      msg: {
+        _id: Math.round(Math.random() * 1000000),
+        text: message,
+        createdAt: new Date(),
+        user: {
+          _id: selectedRoom.loggedUser,
+          name: selectedRoom.name,
+          avatar: selectedRoom.avatar,
+        },
+      },
+    };
+    socket.emit("sendmsg", msg);
+    setMessages([...messagesRef.current, msg.msg]);
     setMessage("");
     await axios
       .post(
@@ -102,8 +134,6 @@ function Chat() {
       )
       .then((response) => {
         console.log(response.data);
-        getMessages();
-        
       })
       .catch((error) => {
         console.log(error);
@@ -153,20 +183,23 @@ function Chat() {
                 <div className="relative flex items-center p-3 border-b border-gray-300">
                   <img
                     className="object-cover w-10 h-10 rounded-full"
-                    src="https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
+                    src={
+                      selectedRoom.avatar
+                        ? selectedRoom.avatar
+                        : "https://cdn.pixabay.com/photo/2018/01/15/07/51/woman-3083383__340.jpg"
+                    }
                     alt="username"
                   />
                   <span className="block ml-2 font-bold text-gray-600">
                     {selectedRoom.name}
                   </span>
-                  <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
                 </div>
                 <div className="relative w-full p-6 overflow-y-auto h-[34rem]">
                   <ul className="space-y-2">
                     {messages.map((message) => (
                       <li
                         className={
-                          selectedRoom.loggedUser === message.user._id
+                          selectedRoom.loggedUser !== message.user._id
                             ? "flex justify-start"
                             : "flex justify-end"
                         }
@@ -226,6 +259,7 @@ function roomCard(room, setSelectedRoom) {
           id: room.roomId,
           name: room.recieverName,
           loggedUser: room.loggedUser,
+          avatar: room.recieverImage,
         });
       }}
     >

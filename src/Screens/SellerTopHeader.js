@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import useState from "react-usestateref";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -12,6 +12,7 @@ import Notifications from "./Notifications";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useFileUpload } from "use-file-upload";
+import { SocketContext } from "../services/webSockets";
 
 const user = {
   name: "Tom Cook",
@@ -49,6 +50,7 @@ function SellerTopHeader({
   const NotifyScreen = () => {
     return <Notifications showModal={setNotifyState} />;
   };
+  const socket = useContext(SocketContext);
   const signOut = () => {
     localStorage.clear();
     nav("/signin");
@@ -56,6 +58,14 @@ function SellerTopHeader({
   const doNothing = () => {
     return;
   };
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("connectedUsers", (data) => {
+        console.log(data);
+      });
+    }
+  }, []);
   //create a function to get the profile picture
   const getProfilePicture = async () => {
     await axios
@@ -73,8 +83,8 @@ function SellerTopHeader({
         console.log(error);
       });
   };
-  useEffect(async () => {
-    await getProfilePicture();
+  useEffect(() => {
+    getProfilePicture();
   }, []);
 
   return (
