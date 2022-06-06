@@ -14,7 +14,7 @@ function ForgetPassword(props) {
       const toastId = toast.loading("Loading...");
       try {
         const response = await axios.post(
-          "http://backend-fashionhub.herokuapp.com/designer/forgotpassword",
+          "https://backend-fashionhub.herokuapp.com/designer/forgotpassword",
           {
             email: email,
           }

@@ -27,7 +27,7 @@ function Settings() {
   const uploadProfilePicture = async () => {
     await axios
       .post(
-        "http://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
+        "https://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -48,7 +48,7 @@ function Settings() {
   //create a function to get the profile picture
   const getProfilePicture = async () => {
     await axios
-      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+      .get("https://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
         headers: {
           "x-token": localStorage.getItem("token"),
         },
@@ -68,7 +68,7 @@ function Settings() {
     const toastId = toast.loading("Loading...");
     await axios
       .delete(
-        "http://backend-fashionhub.herokuapp.com/designer/deleteprofilepicture",
+        "https://backend-fashionhub.herokuapp.com/designer/deleteprofilepicture",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -97,7 +97,7 @@ function Settings() {
   const getDesignerDetails = async () => {
     await axios
       .get(
-        "http://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
+        "https://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -124,7 +124,7 @@ function Settings() {
     const toastId = toast.loading("Loading...");
     await axios
       .post(
-        "http://backend-fashionhub.herokuapp.com/designer/changepassword",
+        "https://backend-fashionhub.herokuapp.com/designer/changepassword",
         {
           oldpassword: oldpass,
           newpassword: newpass,
@@ -415,7 +415,7 @@ function Settings() {
                       const toastId = toast.loading("Uploading...");
                       await axios
                         .post(
-                          "http://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
+                          "https://backend-fashionhub.herokuapp.com/designer/uploadprofilepicture",
                           formData,
                           {
                             headers: {

@@ -34,7 +34,7 @@ function Profile(props) {
   const getPostData = async () => {
     await axios
       .get(
-        "http://backend-fashionhub.herokuapp.com/designer/getpost/" +
+        "https://backend-fashionhub.herokuapp.com/designer/getpost/" +
           currentPost,
         {
           headers: {
@@ -56,7 +56,7 @@ function Profile(props) {
   const getDesignerDetails = async () => {
     await axios
       .get(
-        "http://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
+        "https://backend-fashionhub.herokuapp.com/designer/getdesignerdetails/",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -82,7 +82,7 @@ function Profile(props) {
   const getPosts = async () => {
     try {
       const response = await axios.get(
-        "http://backend-fashionhub.herokuapp.com/designer/getposts",
+        "https://backend-fashionhub.herokuapp.com/designer/getposts",
         {
           headers: {
             "x-token": localStorage.getItem("token"),
@@ -117,7 +117,7 @@ function Profile(props) {
                 {/* profile image */}
                 <img
                   className="w-20 h-20 md:w-40 md:h-40 object-cover rounded-full
-                     border-2 border-pink-600 p-1"
+                      p-1"
                   src={
                     profilepicture
                       ? profilepicture

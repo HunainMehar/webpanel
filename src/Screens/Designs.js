@@ -23,7 +23,7 @@ function Designs(props) {
     formData.append("category", "Dress");
     try {
       const response = await axios.post(
-        "http://backend-fashionhub.herokuapp.com/designer/createpost",
+        "https://backend-fashionhub.herokuapp.com/designer/createpost",
         formData,
         {
           headers: {

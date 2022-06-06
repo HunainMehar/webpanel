@@ -6,6 +6,7 @@ import moment from "moment";
 import useState from "react-usestateref";
 import { SocketContext } from "../services/webSockets";
 import genericService from "../services/genericServices";
+import toast from "react-hot-toast";
 // MessageBox component
 import { ChatList } from "react-chat-elements";
 function useInterval(callback, delay) {
@@ -37,18 +38,23 @@ function Chat() {
   const socket = useContext(SocketContext);
 
   const getRooms = async () => {
+    const toastId = toast.loading("Fetching Chats ...");
     await axios
-      .get("http://backend-fashionhub.herokuapp.com/designer/getrooms", {
+      .get("https://backend-fashionhub.herokuapp.com/designer/getrooms", {
         headers: {
           "x-token": localStorage.getItem("token"),
         },
       })
       .then((response) => {
         console.log(response.data);
+        toast.dismiss(toastId);
+
         setRooms(response.data.rooms);
       })
       .catch((error) => {
         console.log(error);
+        toast.dismiss(toastId);
+        toast.error("Error fetching chats");
       });
   };
   React.useEffect(() => {
@@ -58,7 +64,7 @@ function Chat() {
   const getMessages = async () => {
     await axios
       .get(
-        "http://backend-fashionhub.herokuapp.com/designer/getmessages/" +
+        "https://backend-fashionhub.herokuapp.com/designer/getmessages/" +
           selectedRoom.id,
         {
           headers: {
@@ -121,7 +127,7 @@ function Chat() {
     setMessage("");
     await axios
       .post(
-        "http://backend-fashionhub.herokuapp.com/designer/sendmessage",
+        "https://backend-fashionhub.herokuapp.com/designer/sendmessage",
         {
           roomId: selectedRoom.id,
           message: message,

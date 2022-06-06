@@ -17,7 +17,7 @@ export default function Test(props) {
   //create a function to get the profile picture
   const getProfilePicture = async () => {
     await axios
-      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+      .get("https://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
         headers: {
           "x-token": localStorage.getItem("token"),
         },
@@ -41,7 +41,7 @@ export default function Test(props) {
     //make a post request to the server
     await axios
       .put(
-        `http://backend-fashionhub.herokuapp.com/designer/editpost`,
+        `https://backend-fashionhub.herokuapp.com/designer/editpost`,
         {
           id: props.data._id,
           description: description,
@@ -72,7 +72,7 @@ export default function Test(props) {
     //make a post request to the server
     await axios
       .delete(
-        `http://backend-fashionhub.herokuapp.com/designer/deletepost/${props.data._id}`,
+        `https://backend-fashionhub.herokuapp.com/designer/deletepost/${props.data._id}`,
         {
           headers: {
             "x-token": localStorage.getItem("token"),

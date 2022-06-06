@@ -23,7 +23,7 @@ function Otp(props) {
       const toastId = toast.loading("Loading...");
       try {
         const response = axios.post(
-          "http://backend-fashionhub.herokuapp.com/designer/verifysignup",
+          "https://backend-fashionhub.herokuapp.com/designer/verifysignup",
           {
             otp,
             user: state.user,

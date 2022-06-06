@@ -16,9 +16,10 @@ function OrderDetails({ route }) {
   const navigate = useNavigate();
   console.log(state);
   const changeStatus = async () => {
+    const toastId = toast.loading("Loading...");
     await axios
       .post(
-        `http://backend-fashionhub.herokuapp.com/designer/changeorderstatus/${state._id}`,
+        `https://backend-fashionhub.herokuapp.com/designer/changeorderstatus/${state._id}`,
         {
           status: "completed",
         },
@@ -29,6 +30,7 @@ function OrderDetails({ route }) {
         }
       )
       .then((response) => {
+        toast.dismiss(toastId);
         console.log(response.data);
         toast.success("Status changed successfully");
         navigate("/home");

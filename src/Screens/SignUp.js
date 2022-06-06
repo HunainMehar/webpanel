@@ -18,7 +18,7 @@ function SignUp(props) {
     if (password === confirmPassword && password.length > 0) {
       const toastId = toast.loading("Loading...");
       try {
-         const response = await axios.post("http://backend-fashionhub.herokuapp.com/designer/signup", {
+         const response = await axios.post("https://backend-fashionhub.herokuapp.com/designer/signup", {
           firstname,
           lastname,
           email,

@@ -1,23 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function Orders() {
   const navigate = useNavigate();
   const [isActive, setisActive] = useState("1");
   const [orders, setOrders] = useState([]);
   const getOrders = async () => {
+    const toastId = toast.loading("Fetching Data...");
     await axios
-      .get("http://backend-fashionhub.herokuapp.com/designer/getorders", {
+      .get("https://backend-fashionhub.herokuapp.com/designer/getorders", {
         headers: {
           "x-token": localStorage.getItem("token"),
         },
       })
       .then((response) => {
+        toast.dismiss(toastId);
+        toast.success("Orders loaded successfully");
         console.log(response.data);
         setOrders(response.data.orders);
       })
       .catch((error) => {
+        toast.dismiss(toastId);
+        toast.success("Orders loaded unsuccessfully");
+        
         console.log(error);
       });
   };

@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 function Dashboard() {
+  const [data, setData] = useState([]);
+  const getDashboardData = async () => {
+    await axios
+      .get("https://backend-fashionhub.herokuapp.com/designer/dashboard", {
+        headers: {
+          "x-token": localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  useEffect(() => {
+    getDashboardData();
+  }, []);
+
   return (
     <>
       <header className="bg-white shadow">
@@ -19,7 +39,7 @@ function Dashboard() {
                 Net Income
               </h2>
               <h1 class="font-bold text-2xl lg:text-5xl tracking-1px">
-                ${"450"}
+                PKR {data.netIncome}
               </h1>
             </div>
           </div>
@@ -29,7 +49,7 @@ function Dashboard() {
                 Completed Orders
               </h2>
               <h1 class="font-bold text-2xl lg:text-5xl tracking-1px">
-                {"320"}
+                {data.totalCompletedOrders}
               </h1>
             </div>
           </div>
@@ -39,7 +59,7 @@ function Dashboard() {
                 Total Designs
               </h2>
               <h1 class="font-bold text-2xl lg:text-5xl tracking-1px">
-                {"56"}
+                {data.totalDesigns}
               </h1>
             </div>
           </div>
@@ -49,7 +69,7 @@ function Dashboard() {
                 Followers
               </h2>
               <h1 class="font-bold text-2xl lg:text-5xl tracking-1px">
-                {"743"}
+                {data.followers}
               </h1>
             </div>
           </div>

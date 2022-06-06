@@ -69,7 +69,7 @@ function SellerTopHeader({
   //create a function to get the profile picture
   const getProfilePicture = async () => {
     await axios
-      .get("http://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
+      .get("https://backend-fashionhub.herokuapp.com/designer/getprofilepic", {
         headers: {
           "x-token": localStorage.getItem("token"),
         },
